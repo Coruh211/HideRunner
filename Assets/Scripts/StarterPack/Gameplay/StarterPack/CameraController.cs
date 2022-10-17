@@ -1,23 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class CameraController : MonoBehaviour
+namespace StarterPack.Gameplay.StarterPack
 {
-    [SerializeField] private Transform target;
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private Vector3 offset;
-    
-    private void LateUpdate()
+    public class CameraController : MonoBehaviour
     {
-        if (!target)
-            return;
+        [SerializeField] private Transform Target;
+        [SerializeField] private float Speed = 10f;
+        [SerializeField] private Vector3 Offset;
 
-        transform.position = Vector3.Lerp(transform.position, target.position + offset, Time.deltaTime * speed);
-    }
-    
-    public void SetTarget(Transform target)
-    {
-        this.target = target;
+        private void Start()
+        {
+            EventManager.OnStartGame.Subscribe(SetTarget);
+        }
+
+        private void LateUpdate()
+        {
+            if (!Target)
+                return;
+
+            transform.position = Vector3.Lerp(transform.position, Target.position + Offset, Time.deltaTime * Speed);
+        }
+
+        private void SetTarget()
+        {
+            Target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
     }
 }

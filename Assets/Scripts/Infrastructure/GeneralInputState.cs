@@ -2,7 +2,7 @@
 {
     public class GeneralInputState: Singleton<GeneralInputState>
     {
-        public bool input;
+        public bool Input;
 
         private void Start()
         {
@@ -10,9 +10,9 @@
         }
 
         public void EnableInput() => 
-            input = true;
+            Input = true;
 
         public void DisableInput() => 
-            input = false;
+            Input = false;
     }
 }

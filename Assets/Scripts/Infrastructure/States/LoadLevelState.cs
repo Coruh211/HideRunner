@@ -1,6 +1,9 @@
 ﻿using Infrastructure.Factory;
 using Infrastructure.Services;
 using LoadScreen;
+using Logic.Generator;
+using Logic.NavMesh;
+using Logic.Player;
 using UnityEngine;
 
 namespace Infrastructure.States
@@ -41,12 +44,19 @@ namespace Infrastructure.States
 
         private void RegisterServices()
         {
-            
+            _allServices.RegisterSingle<ILevelConstructorService>(new LevelConstructor());
+            _allServices.RegisterSingle<IGameConstructor>(new GameConstructor(_allServices.Single<ILevelConstructorService>()));
+            _allServices.RegisterSingle<INoiseController>(new PlayerNoise());
         }
 
         private void OnLoaded()
         {
-
+            _allServices.Single<ILevelConstructorService>().Construct();
+            
+            NavMeshBaker.Instance.BakeMesh();
+            
+            _allServices.Single<IGameConstructor>().Construct();
+            
             _stateMachine.Enter<GameLoopState>();
         }
     }
