@@ -1197,7 +1197,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AnimatorController: {fileID: 2000256167496994883}
   ModelMeshRenderer: {fileID: 1872678951597246348}
-  PatrolMaterial: {fileID: 2100000, guid: b10568db81dce574ba03b24e5ac04657, type: 2}
   AgreMaterial: {fileID: 2100000, guid: 5a7c96c49a125b74b8fb746b6050e60e, type: 2}
 --- !u!114 &2000256167496994883
 MonoBehaviour:

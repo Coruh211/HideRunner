@@ -37,7 +37,7 @@ namespace Logic.Player
         private void OnDestroy() => 
             _inputEnable = false;
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (_inputEnable)
             {
