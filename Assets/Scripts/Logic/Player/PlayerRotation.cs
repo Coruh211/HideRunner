@@ -10,11 +10,7 @@ namespace Logic.Player
         public void OnMove(InputAction.CallbackContext context)
         {
             _rotateDirection = context.ReadValue<Vector2>();
-        }
-
-        public void Update()
-        {
-            Rotate();            
+            Rotate();
         }
         
         private void Rotate()

@@ -11,6 +11,8 @@ namespace Logic.Player
         public void DisposeIncrease();
         public void DisposeReduction();
 
+        public void ResetNoise();
+
         public event Action<float> UpdateNoise;
         public event Action MaxNoise;
     }

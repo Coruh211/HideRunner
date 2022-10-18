@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Services;
+using Logic.Input;
 using StaticData;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,27 +12,32 @@ namespace Logic.Player
         
         private PlayerSo _playerSo;
         private Vector2 _moveDirection;
-        private bool _inputEnable = true;
         private float _moveSpeed;
         private INoiseController _playerNoise;
+        private bool _inputEnable;
 
         public void OnMove(InputAction.CallbackContext context)
         {
             _moveDirection = context.ReadValue<Vector2>();
             _playerNoise.IncreaseNoise();
         }
-
-        public Vector2 GetMoveDirection() =>
-            _moveDirection;
         
         private void Start()
         {
             _playerSo = Resources.Load<PlayerSo>(AssetPath.PLAYERSO_PATH);
             _moveSpeed = _playerSo.Speed;
             _playerNoise = AllServices.Container.Single<INoiseController>();
+            
+            GlobalInputState.Instance.StartGameAction += EnableInput;
         }
 
-        private void Update()
+        private void EnableInput() => 
+            _inputEnable = true;
+
+        private void OnDestroy() => 
+            _inputEnable = false;
+
+        private void FixedUpdate()
         {
             if (_inputEnable)
             {

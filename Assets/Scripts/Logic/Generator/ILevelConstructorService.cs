@@ -11,5 +11,7 @@ namespace Logic.Generator
         public Vector2 GetPlayerPosition();
         public Vector2 GetEndPosition();
         public List<Transform> GetFloorTransform();
+
+        public void ClearLevel();
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Logic.Generator
 {
-    public interface IGameConstructor: IService
+    public interface IModelConstructor: IService
     {
         public void Construct();
+
+        public void ClearLevel();
     }
 }

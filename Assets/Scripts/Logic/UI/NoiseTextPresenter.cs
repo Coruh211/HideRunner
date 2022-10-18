@@ -1,5 +1,4 @@
-﻿using System;
-using Infrastructure.Services;
+﻿using Infrastructure.Services;
 using Logic.Player;
 using TMPro;
 using UnityEngine;

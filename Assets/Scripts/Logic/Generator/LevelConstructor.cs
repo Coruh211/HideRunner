@@ -14,9 +14,8 @@ namespace Logic.Generator
         private int[,] _data;
         private Vector2 _startPosition;
         private Vector2 _endPosition;
-        private List<Transform> _floorObjects = new List<Transform>();
-        
-        
+        private List<Transform> _floorObjects;
+        private List<GameObject> _environmentList;
 
 
         public LevelConstructor()
@@ -42,6 +41,17 @@ namespace Logic.Generator
 
         public List<Transform> GetFloorTransform() => 
             _floorObjects;
+
+        public void ClearLevel()
+        {
+            for (int i = 0; i < _environmentList.Count; i++)
+            {
+                Object.Destroy(_environmentList[i].gameObject);
+            }
+            
+            _floorObjects.Clear();
+            _environmentList.Clear();
+        }
 
         private void GenerateNewMaze(int sizeRows, int sizeCols)
         {
@@ -98,8 +108,10 @@ namespace Logic.Generator
         
         private void GenerateLevel()
         {
+            _floorObjects = new List<Transform>();
+            _environmentList = new List<GameObject>();
             var level = GameObject.FindGameObjectWithTag("Level");
-            
+
             int[,] maze = _data;
             
             int rMax = maze.GetUpperBound(0);
@@ -115,16 +127,16 @@ namespace Logic.Generator
                         var obj = Object.Instantiate(_floorSo.FloorPrefab, new Vector3(i, 0, j),
                             Quaternion.identity, level.transform);
                         _floorObjects.Add(obj.transform);
+                        _environmentList.Add(obj);
                     }
                     else
                     {
-                        Object.Instantiate(_wallSo.WallPrefab, new Vector3(i, 0, j),
+                        var obj = Object.Instantiate(_wallSo.WallPrefab, new Vector3(i, 0, j),
                             Quaternion.identity, level.transform);
+                        _environmentList.Add(obj);
                     }
                 }
             }
         }
-
-       
     }
 }

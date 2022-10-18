@@ -4,6 +4,7 @@ using LoadScreen;
 using Logic.Generator;
 using Logic.NavMesh;
 using Logic.Player;
+using StaticData;
 using UnityEngine;
 
 namespace Infrastructure.States
@@ -15,9 +16,9 @@ namespace Infrastructure.States
         private readonly LoadCanvas _loadCanvas;
         private readonly IGameFactory _gameFactory;
         private readonly AllServices _allServices;
-        private GameObject[] spawnPoints;
-        private GameObject spawnContainer;
-        private object uiSelector;
+        private GameObject[] _spawnPoints;
+        private GameObject _spawnContainer;
+        private object _uiSelector;
 
 
         public LoadLevelState(GameStateMachine stateMachine, SceneLoader sceneLoader, LoadCanvas loadCanvas,
@@ -45,17 +46,17 @@ namespace Infrastructure.States
         private void RegisterServices()
         {
             _allServices.RegisterSingle<ILevelConstructorService>(new LevelConstructor());
-            _allServices.RegisterSingle<IGameConstructor>(new GameConstructor(_allServices.Single<ILevelConstructorService>()));
+            _allServices.RegisterSingle<IModelConstructor>(new ModelConstructor(_allServices.Single<ILevelConstructorService>()));
             _allServices.RegisterSingle<INoiseController>(new PlayerNoise());
+            _allServices.RegisterSingle<ILevelControllerService>(new LevelController(_allServices.Single<ILevelConstructorService>(), _allServices.Single<IModelConstructor>()));
         }
 
         private void OnLoaded()
         {
-            _allServices.Single<ILevelConstructorService>().Construct();
+            _gameFactory.CreateObject(AssetPath.HUD_PATH);
+            _gameFactory.CreateObject(AssetPath.LEVEL_PATH);
             
-            NavMeshBaker.Instance.BakeMesh();
-            
-            _allServices.Single<IGameConstructor>().Construct();
+            _allServices.Single<ILevelControllerService>().ConstructLevel();
             
             _stateMachine.Enter<GameLoopState>();
         }

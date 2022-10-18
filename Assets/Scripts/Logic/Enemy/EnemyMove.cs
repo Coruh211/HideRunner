@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Infrastructure.Services;
 using Logic.Generator;
+using Logic.Input;
 using Logic.Player;
 using StaticData;
-using UniRx;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,16 +12,17 @@ namespace Logic.Enemy
 {
     public class EnemyMove: MonoBehaviour
     {
-        [SerializeField] private NavMeshAgent Agent;
-        [SerializeField] private int GoalsCount;
-        [SerializeField] private float DistanceToChangeGoal;
-        [SerializeField] private float OffsetToCenterGoal = 0.5f;
         [SerializeField] private AnimatorController AnimatorController;
+        [SerializeField] private SkinnedMeshRenderer ModelMeshRenderer;
+        [SerializeField] private Material AgreMaterial;
         
-
+        
+        private NavMeshAgent _agent;
+        
         private ILevelConstructorService _levelConstructorService;
         private INoiseController _noiseController;
-        private List<Transform> _goals = new List<Transform>();
+        private List<Transform> _goals;
+        
         private EnemySO _enemySo;
         private int _currentGoal;
         private bool _startGame;
@@ -34,21 +35,26 @@ namespace Logic.Enemy
             _levelConstructorService = levelConstructorService;
             _enemySo = enemySo;
             _noiseController = AllServices.Container.Single<INoiseController>();
-            _player = GameObject.FindGameObjectWithTag("Player");
             _noiseController.MaxNoise += StartChasing;
-            EventManager.OnStartGame.Subscribe(StartMove);
+
+            GlobalInputState.Instance.StartGameAction += StartMove;
         }
-        
+
         public void StartChasing() => 
             _startChasing = true;
 
         private void StartMove()
         {
+            GlobalInputState.Instance.StartGameAction -= StartMove;
+                
+            _goals = new List<Transform>();
             GetGoals();
             
-            Agent.destination = _goals[_currentGoal].position;
+            _player = GameObject.FindGameObjectWithTag("Player");
+            _agent = GetComponent<NavMeshAgent>();
+            _agent.destination = _goals[_currentGoal].position;
             AnimatorController.SetState(1);
-            Agent.speed = _enemySo.Speed;
+            _agent.speed = _enemySo.Speed;
             _startGame = true;
         }
         
@@ -61,34 +67,33 @@ namespace Logic.Enemy
 
             if (_startChasing)
             {
-                Agent.destination = _player.transform.position;
+                _agent.destination = _player.transform.position;
+                ModelMeshRenderer.material = AgreMaterial;
                 return;
             }
             
-            if (Agent.remainingDistance < DistanceToChangeGoal)
+            if (_agent.remainingDistance < _enemySo.DistanceToChangeGoal)
             {
                 _currentGoal++;
                 
                 if (_currentGoal == _goals.Count) 
                     _currentGoal = 0;
                 
-                Agent.destination = _goals[_currentGoal].position;
+                _agent.destination = _goals[_currentGoal].position;
             }
         }
 
         private void GetGoals()
         {
-            for (int i = 0; i < GoalsCount; i++)
+            for (int i = 0; i < _enemySo.GoalsCount; i++)
             {
                 var floorList = _levelConstructorService.GetFloorTransform();
                 var randomGoal = floorList[Random.Range(0, floorList.Count)];
                 var position = randomGoal.position;
-                position.ChangeX(position.x + OffsetToCenterGoal);
-                position.ChangeZ(position.z + OffsetToCenterGoal);
+                position.ChangeX(position.x + _enemySo.OffsetToCenterGoal);
+                position.ChangeZ(position.z + _enemySo.OffsetToCenterGoal);
                 _goals.Add(randomGoal);
             }
         }
-
-       
     }
 }

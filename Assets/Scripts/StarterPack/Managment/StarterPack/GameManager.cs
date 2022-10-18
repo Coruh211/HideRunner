@@ -24,9 +24,4 @@ public class GameManager : Singleton<GameManager>
                 GUIManager.Open<EndGameLoseMenu>();
         });
     }
-
-    private void OnDestroy()
-    {
-        EventManager.Reset();
-    }
 }

@@ -15,7 +15,7 @@ namespace Logic.Player
         private bool _startReduction;
         private IDisposable _incteaseDisposable;
         private IDisposable _reductionDisposable;
-        
+
         public event Action<float> UpdateNoise;
         public event Action MaxNoise;
         
@@ -72,6 +72,15 @@ namespace Logic.Player
             });
         }
 
+        public void ResetNoise()
+        {
+            _incteaseDisposable?.Dispose();
+            _startIncrease = false;
+            _reductionDisposable?.Dispose();
+            _startReduction = false;
+            _noiseLevel = 0;
+            UpdateNoise?.Invoke(_noiseLevel);
+        }
         
         public void DisposeIncrease()
         {
